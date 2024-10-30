@@ -1,0 +1,282 @@
+---
+title: "code-seminar-analysis"
+embed-resources: true
+---
+
+## Overiew
+
+This worksheet contains code to analyze responses during a University of Utah Internal Medicine Residency Seminar to teach interns how to run code blues and rapid responses. 
+
+The course materials are hosted at: https://reblocke.github.io/talks/2024-Code-RR 
+
+### Descriptive Statistics
+
+```{r}
+#| echo: false
+library(readxl)
+library(dplyr)
+
+folder <- "C:/Users/reblo/Box/Residency Personal Files/Scholarly Work/Locke Research Projects/Code Seminar/code-seminar-analysis/Data/"  
+# "C:/Code Projects/Code Blue Training/R-Stats/Data/" # Just delete my path and un-comment yours to make this work again
+file <- "arcbt.xlsx"
+survey_responses <- read_excel(paste0(folder, file))
+
+# Create a few derivative variables: 
+survey_responses <- survey_responses %>%
+  mutate(
+    change_con_code = post_con_code - pre_con_code,
+    change_con_rap = post_con_rap - pre_con_rap, 
+    change_nerv_code = post_nerv_code - pre_nerv_code,
+    change_nerv_rap = post_nerv_rap - pre_nerv_rap
+  )
+
+summary(survey_responses)
+
+```
+#### Raw data
+
+```{r}
+library(tinytable)
+tt(survey_responses)
+```
+
+#### Summary Data
+
+Pre
+```{r}
+library(modelsummary)
+
+# Define custom functions for the 25th and 75th percentiles
+q1 <- function(x) quantile(x, 0.25, na.rm = TRUE)
+q3 <- function(x) quantile(x, 0.75, na.rm = TRUE)
+n_non_missing <- function(x) sum(!is.na(x))
+
+# Create the summary table with median, Q1, Q3, and N
+datasummary((N = n_non_missing) +
+            (Median = median) + 
+            (Q1 = q1) + 
+            (Q3 = q3) ~ 
+              pre_con_code + pre_con_rap + pre_nerv_code + pre_nerv_rap, 
+            data = survey_responses)
+```
+
+Post
+```{r}
+datasummary((N = n_non_missing) +
+            (Median = median) + 
+            (Q1 = q1) + 
+            (Q3 = q3) ~ 
+              post_con_code + post_con_rap + post_nerv_code + post_nerv_rap, 
+            data = survey_responses)
+```
+
+Change in Scores
+```{r}
+datasummary((N = n_non_missing) +
+            (Median = median) + 
+            (Q1 = q1) + 
+            (Q3 = q3) ~ 
+              change_con_code + change_con_rap + change_nerv_code + change_nerv_rap, 
+            data = survey_responses)
+```
+
+Experience and performance
+```{r}
+datasummary((N = n_non_missing) +
+            (Median = median) + 
+            (Q1 = q1) + 
+            (Q3 = q3) ~ 
+              code_obs + rapids_obs + intern_lead + intern_sims + q_right, 
+            data = survey_responses)
+```
+
+Easier, but doesn't have percentiles
+
+```{r}
+datasummary_skim(survey_responses)
+```
+
+Interesting!
+
+### Univariate Visual Inspection 
+
+(I didn't update these since they are superceded by the datasummary_skim call above)
+
+```{r}
+library(ggplot2)
+
+ggplot(survey_responses, aes(x = pre_con_code)) +
+     geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+     labs(title = "Frequency of Each Value",
+          x = "Value",
+          y = "Frequency") +
+     theme_minimal()
+
+ggplot(survey_responses, aes(x = pre_con_rap)) +
+     geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+     labs(title = "Frequency of Each Value",
+          x = "Value",
+          y = "Frequency") +
+     theme_minimal()
+
+ggplot(survey_responses, aes(x = pre_nerv_code)) +
+     geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+     labs(title = "Frequency of Each Value",
+          x = "Value",
+          y = "Frequency") +
+     theme_minimal()
+
+ggplot(survey_responses, aes(x = pre_nerv_rap)) +
+     geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+     labs(title = "Frequency of Each Value",
+          x = "Value",
+          y = "Frequency") +
+     theme_minimal()
+
+ggplot(survey_responses, aes(x = post_con_code)) +
+     geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+     labs(title = "Frequency of Each Value",
+          x = "Value",
+          y = "Frequency") +
+     theme_minimal()
+
+ggplot(survey_responses, aes(x = post_con_rap)) +
+     geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+     labs(title = "Frequency of Each Value",
+          x = "Value",
+          y = "Frequency") +
+     theme_minimal()
+     
+ggplot(survey_responses, aes(x = post_nerv_code)) +
+     geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+     labs(title = "Frequency of Each Value",
+          x = "Value",
+          y = "Frequency") +
+     theme_minimal()
+
+ggplot(survey_responses, aes(x = post_nerv_rap)) +
+     geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+     labs(title = "Frequency of Each Value",
+          x = "Value",
+          y = "Frequency") +
+     theme_minimal()
+```
+
+### Correlations
+
+```{r}
+datasummary_correlation(survey_responses)
+```
+lots of interesting stuff in there. 
+
+### Visualize Bivariate Correlations of Interest
+
+```{r}
+ggstatsplot::ggscatterstats(data = survey_responses, x = code_obs, y = pre_con_code)
+```
+not much relationship between observations and confidence
+
+```{r}
+ggstatsplot::ggscatterstats(data = survey_responses, x = code_obs, y = pre_nerv_code)
+```
+
+```{r}
+ggstatsplot::ggscatterstats(data = survey_responses, x = rapids_obs, y = change_nerv_rap)
+```
+
+```{r}
+ggstatsplot::ggscatterstats(data = survey_responses, x = q_right, y = pre_con_code)
+```
+
+```{r}
+ggstatsplot::ggscatterstats(data = survey_responses, x = q_right, y = change_nerv_code)
+```
+
+
+(Feel free to add more that seem interesting)
+
+
+### Inferential Statistics
+
+Now for some stats, just looking at the confidence and nervousness changes pre + post intervention with a paired t-test:
+
+Pre + Post Confidence for Codes
+```{r}
+t.test(survey_responses$pre_con_code, survey_responses$post_con_code, paired = TRUE)
+```
+(You'll notice that the paired t-test is the same as the 1 sample t-test of change_*** - because that is essentially what a paired t-test asks... is the difference not 0?)
+
+
+Pre + Post Confidence for Rapids
+```{r}
+t.test(survey_responses$pre_con_rap, survey_responses$post_con_rap, paired = TRUE)
+```
+
+Pre + Post Nervousness for Codes
+```{r}
+t.test(survey_responses$pre_nerv_code, survey_responses$post_nerv_code, paired = TRUE)
+```
+
+Pre + Post Nervousness for Rapids
+```{r}
+t.test(survey_responses$pre_nerv_rap, survey_responses$post_nerv_rap, paired = TRUE)
+```
+
+Is there a way to have it output the t-test with a title?
+[ ] how do you mean?
+
+
+Wanted to look at confidence and nervousness before intervention related to events attended and events lead (tried to include questions right in the second, tbh not sure how to interpret the results:
+
+```{r}
+library(modelsummary)
+#Simple Linear Regression of Events observed + confidence
+simple_con_model <- lm(pre_con_code ~ code_obs, data = survey_responses)
+# summary(simple_con_model)
+modelsummary(simple_con_model, 
+             output = "markdown", 
+             fmt = 2, 
+             statistic = 'conf.int',
+             conf_level = 0.95) #better display
+```
+You're correct - this says that confidence at Obs_code = 0 is 4.423 on average (that's the intercept), and that for each code observed the confidence increases by 0.192 on average (but that it's not significant - CI -0.27 to 0.65). Additionally, number of codes observed explains only 0.046 of the variation in confidence. 
+
+```{r}
+modelplot(simple_con_model)
+```
+
+
+
+Now, with the limited sample size (n=18), we probably shouldn't do more than 2 predictors in the model at any given time to avoid overfitting. But here's an example of how I might do it:
+
+
+Question: did number of codes observed change the post seminar nervousness after accounting for pre seminar nervousness? 
+
+```{r}
+
+#Tried to add a second variable (questions right on quiz)
+test_con_model <- glm(post_nerv_code ~ code_obs + pre_nerv_code, data = survey_responses)
+# summary(test_con_model)
+modelsummary(test_con_model, 
+             output = "markdown", 
+             fmt = 2, 
+             statistic = 'conf.int',
+             conf_level = 0.95) #better display
+```
+
+Answer: no, expected post-nerve increased by 0.1 per code observed, after accounting for the pre sem nervousness
+
+```{r}
+modelplot(test_con_model)
+```
+
+some other cool regression-related packages to play around with: 
+
+check model assumptions
+
+```{r}
+library(performance)
+check_model(test_con_model)
+```
+
+
