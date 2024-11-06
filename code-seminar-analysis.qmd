@@ -1,4 +1,4 @@
----
+ ---
 title: "code-seminar-analysis"
 embed-resources: true
 ---
@@ -16,8 +16,8 @@ The course materials are hosted at: https://reblocke.github.io/talks/2024-Code-R
 library(readxl)
 library(dplyr)
 
-folder <- "C:/Users/reblo/Box/Residency Personal Files/Scholarly Work/Locke Research Projects/Code Seminar/code-seminar-analysis/Data/"  
-# "C:/Code Projects/Code Blue Training/R-Stats/Data/" # Just delete my path and un-comment yours to make this work again
+# folder <- "C:/Code Projects/Code Blue Training Edits/code-seminar-analysis/Data/"  
+folder <- "/Users/blocke/Box Sync/Residency Personal Files/Scholarly Work/Locke Research Projects/Code Seminar/code-seminar-analysis/Data/"
 file <- "arcbt.xlsx"
 survey_responses <- read_excel(paste0(folder, file))
 
@@ -56,7 +56,7 @@ datasummary((N = n_non_missing) +
             (Median = median) + 
             (Q1 = q1) + 
             (Q3 = q3) ~ 
-              pre_con_code + pre_con_rap + pre_nerv_code + pre_nerv_rap, 
+              pre_con_code + pre_con_rap + pre_nerv_code + pre_nerv_rap + code_obs + rapids_obs + intern_sims, 
             data = survey_responses)
 ```
 
@@ -172,7 +172,8 @@ lots of interesting stuff in there.
 ### Visualize Bivariate Correlations of Interest
 
 ```{r}
-ggstatsplot::ggscatterstats(data = survey_responses, x = code_obs, y = pre_con_code)
+library(ggstatsplot)
+ggscatterstats(data = survey_responses, x = code_obs, y = pre_con_code)
 ```
 not much relationship between observations and confidence
 
@@ -189,9 +190,11 @@ ggstatsplot::ggscatterstats(data = survey_responses, x = q_right, y = pre_con_co
 ```
 
 ```{r}
-ggstatsplot::ggscatterstats(data = survey_responses, x = q_right, y = change_nerv_code)
+ggstatsplot::ggscatterstats(data = survey_responses, x = q_right, y = change_nerv_code) + labs(x = "Custom X-axis Title", y = "Custom Y-axis Title", title = "Main Title")
 ```
-
+```{r}
+ggstatsplot::ggscatterstats(data = survey_responses, x = intern_sims, y = pre_con_code) + labs(x = "Intern Sim Exposure", y = "Code Leadership Confidence", title = "Sim Impact on Leadership Confidence")
+```
 
 (Feel free to add more that seem interesting)
 
@@ -202,42 +205,41 @@ Now for some stats, just looking at the confidence and nervousness changes pre +
 
 Pre + Post Confidence for Codes
 ```{r}
-t.test(survey_responses$pre_con_code, survey_responses$post_con_code, paired = TRUE)
+t.test(survey_responses$post_con_code, survey_responses$pre_con_code, paired = TRUE)
+?t.test
 ```
 (You'll notice that the paired t-test is the same as the 1 sample t-test of change_*** - because that is essentially what a paired t-test asks... is the difference not 0?)
 
 
 Pre + Post Confidence for Rapids
 ```{r}
-t.test(survey_responses$pre_con_rap, survey_responses$post_con_rap, paired = TRUE)
+t.test(survey_responses$post_con_rap, survey_responses$pre_con_rap, paired = TRUE)
 ```
 
 Pre + Post Nervousness for Codes
 ```{r}
-t.test(survey_responses$pre_nerv_code, survey_responses$post_nerv_code, paired = TRUE)
+t.test(survey_responses$post_nerv_code, survey_responses$pre_nerv_code, paired = TRUE)
 ```
 
 Pre + Post Nervousness for Rapids
 ```{r}
-t.test(survey_responses$pre_nerv_rap, survey_responses$post_nerv_rap, paired = TRUE)
+t.test(survey_responses$post_nerv_rap, survey_responses$pre_nerv_rap, paired = TRUE)
 ```
 
-Is there a way to have it output the t-test with a title?
-[ ] how do you mean?
 
 
 Wanted to look at confidence and nervousness before intervention related to events attended and events lead (tried to include questions right in the second, tbh not sure how to interpret the results:
 
 ```{r}
-library(modelsummary)
+#library(modelsummary)
 #Simple Linear Regression of Events observed + confidence
-simple_con_model <- lm(pre_con_code ~ code_obs, data = survey_responses)
+#simple_con_model <- lm(pre_con_code ~ code_obs, data = survey_responses)
 # summary(simple_con_model)
-modelsummary(simple_con_model, 
-             output = "markdown", 
-             fmt = 2, 
-             statistic = 'conf.int',
-             conf_level = 0.95) #better display
+#modelsummary(test_con_model, 
+#             output = "markdown", 
+#             fmt = 2, 
+#             statistic = c('estimate', 'p.value', 'conf.int'),
+#             conf_level = 0.95) #better display
 ```
 You're correct - this says that confidence at Obs_code = 0 is 4.423 on average (that's the intercept), and that for each code observed the confidence increases by 0.192 on average (but that it's not significant - CI -0.27 to 0.65). Additionally, number of codes observed explains only 0.046 of the variation in confidence. 
 
@@ -260,7 +262,7 @@ test_con_model <- glm(post_nerv_code ~ code_obs + pre_nerv_code, data = survey_r
 modelsummary(test_con_model, 
              output = "markdown", 
              fmt = 2, 
-             statistic = 'conf.int',
+             statistic = c('estimate','conf.int','p.value'),
              conf_level = 0.95) #better display
 ```
 
@@ -268,6 +270,120 @@ Answer: no, expected post-nerve increased by 0.1 per code observed, after accoun
 
 ```{r}
 modelplot(test_con_model)
+```
+
+Looking at pre-data in regards to observations and sim exposure:
+
+```{r}
+
+library(modelsummary)
+
+models <- list()
+
+models[['Confidence, Code']] <- lm(pre_con_code ~ code_obs + intern_sims, data = survey_responses)
+models[['Nervousness, Code']] <- lm(pre_nerv_code ~ code_obs + intern_sims, data = survey_responses)
+
+models[['Confidence, Rapid']] <- lm(pre_con_rap ~ rapids_obs + intern_sims, data = survey_responses)
+models[['Nervousness, Rapid']] <- lm(pre_nerv_rap ~ rapids_obs + intern_sims, data = survey_responses)
+```
+
+Generating data tables + forest plot:
+
+```{r}
+# summary(simple_con_model)
+
+library(broom)
+
+modelsummary(models, 
+             output = "markdown", 
+             fmt = 2, 
+             statistic = c('estimate','p.value','conf.int'),
+             conf_level = 0.95) #better display
+```
+
+```{r}
+
+modelplot(models,
+          coef_omit = "Intercept",
+          title = "Coefficient Plot without Intercepts")
+
+# Tidy up the models to get the coefficients and confidence intervals
+model_results <- lapply(models, tidy, conf.int = TRUE)
+
+# Combine the model results into one data frame
+model_df <- do.call(rbind, model_results)
+
+library(dplyr)
+library(forcats)
+
+# Enhance model_df with descriptive model labels
+model_df <- model_df %>%
+  filter(term != "(Intercept)") %>%  # Optional: remove intercept from the plot
+  mutate(model = factor(c("Code Confidence:Observed Events", "Code Confidence:Sim Exposure", "Code Nervousness:Observed Events", 
+                          "Code Nervousness:Sim Exposure", "Rapids Confidence: Observed Events", 
+                          "Rapids Confidence:Sim Exposure", "Rapids Nervousness: Observed Events", 
+                          "Rapids Nervousness:Sim Exposure")))  # Add custom labels
+
+# Reverse the order of the models so the current bottom is at the top
+model_df$model <- fct_rev(model_df$model)
+
+library(ggplot2)
+
+# Create the forest plot
+ggplot(model_df, aes(x = estimate, y = model, xmin = conf.low, xmax = conf.high)) +
+  geom_point() +  # Plot the estimates as points
+  geom_errorbarh(height = 0.3) +  # Add horizontal error bars for the confidence intervals
+  geom_vline(xintercept = 0, linetype = "dashed") +  # Add a vertical line at 0 for reference
+  geom_text(aes(label = model),  # Add the model number as labels
+      hjust = -0.1, vjust = 1, size = 3, color = "black") +  # Position and format the label
+  labs(x = "Regression Coefficient", y = "Regression Models") +
+  scale_y_discrete(labels = NULL) +  # Remove labels from y-axis +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 12))
+```
+
+```{r}
+library(forestplot)
+library(dplyr)
+library(ggplot2)
+
+#| echo: false
+library(readxl)
+library(dplyr)
+
+# folder <- "C:/Code Projects/Code Blue Training Edits/code-seminar-analysis/Data/"  
+folder <- "/Users/blocke/Box Sync/Residency Personal Files/Scholarly Work/Locke Research Projects/Code Seminar/code-seminar-analysis/Data/"
+file <- "forest.xlsx"
+forest_test <- read_excel(paste0(folder, file))
+
+```
+
+Looking at exposure in regards to change in scores after seminar:
+
+```{r}
+models_response <- list()
+
+
+models_response[['Confidence, Change Code']] <- lm(change_con_code ~ code_obs + intern_sims, data = survey_responses)
+models_response[['Nervousness, Change Code']] <- lm(change_nerv_code ~ code_obs + intern_sims, data = survey_responses)
+
+models_response[['Confidence, Change Rapid']] <- lm(change_con_rap ~ rapids_obs + intern_sims, data = survey_responses)
+models_response[['Nervousness, Change Rapid']] <- lm(change_nerv_rap ~ rapids_obs + intern_sims, data = survey_responses)
+
+ 
+
+# summary(simple_con_model)
+
+modelsummary(models_response,
+
+             output = "markdown",
+
+             fmt = 2,
+
+             statistic = 'p.value','conf.int',
+
+             conf_level = 0.95) #better display
+
 ```
 
 some other cool regression-related packages to play around with: 
@@ -279,4 +395,92 @@ library(performance)
 check_model(test_con_model)
 ```
 
+```{r}
+library(dplyr)
+library(tidyverse)
+survey_df <- survey_responses
+
+# Add a unique subject ID column
+survey_df <- survey_df %>%
+  mutate(Subject = row_number())
+
+# Pivot the data to reshape both "Confidence" and "Nervousness" with "Event" as "Code" or "Rapid"
+survey_df <- survey_df %>%
+  pivot_longer(
+    cols = c(pre_con_code, post_con_code, pre_con_rap, post_con_rap, pre_nerv_code, post_nerv_code, pre_nerv_rap, post_nerv_rap),
+    names_to = c("time", "Event", ".value"),
+    names_pattern = "(pre|post)_(con|nerv)_(code|rap)"
+  ) %>%
+  mutate(
+    Event = recode(Event, code = "Code", rap = "Rapid"),
+    time = ifelse(time == "pre", "Pre", "Post")
+  )
+
+# Housekeeping of variable replacement: 
+
+survey_df <- survey_df %>%
+  dplyr::mutate(time = factor(survey_df$time, levels = c("Pre", "Post")))
+
+survey_df <- survey_df %>%
+  mutate(Event = recode(Event, con = "Confidence", nerv = "Nervousness"))
+
+
+```
+
+
+
+```{r}
+library(grafify)
+plot1 <- plot_befafter_colours(data = survey_df,
+                      xcol = time,
+                      ycol = code,
+                      match = Subject,
+                      facet = Event,
+                      Boxplot = TRUE,
+                      symsize = 4,
+                      ColPal = "light",
+                      ColRev = T)+
+  guides(fill = "none", colour = "none")+
+    labs(title = "Code Blue")+
+    xlab("")+
+    ylab("Rating")+
+    ylim(0, 10)
+
+
+plot2 <- plot_befafter_colours(data = survey_df,
+                      xcol = time,
+                      ycol = rap,
+                      match = Subject,
+                      facet = Event,
+                      Boxplot = TRUE,
+                      symsize = 4,
+                      ColPal = "light",
+                      ColRev = T)+
+  guides(fill = "none", colour = "none")+
+    labs(title = "Rapid Response")+
+    xlab("")+
+    ylab("Rating")+
+    ylim(0, 10)
+
+plot1
+plot2
+
+```
+
+```{r}
+library(patchwork)
+combined_plot <- plot1 | plot2  # Stack the plots vertically
+# or use `plot1 | plot2` to place them side-by-side
+combined_plot
+
+# Save the combined plot with specified dimensions and resolution
+ggsave("combined_plot.png", 
+       plot = combined_plot, 
+       width = 10, 
+       height = 5, 
+       dpi = 300, 
+       units = "in")
+
+
+```
 
