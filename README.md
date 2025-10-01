@@ -3,15 +3,17 @@
 > Statistical code and teaching materials supporting the **Rising PGY2 Seminar: Codes and Rapid Response Teams (RRT)** (2024 edition).
 
 **Project links & IDs**  
-- 2024 seminar overview: https://reblocke.github.io/talks/2024-Code-RR (note - a 2025 expanded edition exists here: https://reblocke.github.io/U-of-U-IM-Codes-and-Rapid-Responses/)  
+- 2024 seminar overview: https://reblocke.github.io/talks/2024-Code-RR
 - Abstract (ATS, 2025): https://doi.org/10.1164/ajrccm.2025.211.Abstracts.A5624  
 - Repository: https://github.com/reblocke/code-seminar-analysis  
 - License: MIT (see `LICENSE`)
 
+(note - a 2025 expanded edition of this teaching module exists here: https://reblocke.github.io/U-of-U-IM-Codes-and-Rapid-Responses/)  
+
 ## Cite this work
 Please cite the code and the related abstract if you use or adapt these materials. A ready-to-use citation file is provided in [`CITATION.cff`](./CITATION.cff).
 
-## Quick start (reproduce the main artifact)
+## Quick start 
 This repository is organized as an R/Quarto project. The primary output is an HTML report built from a Quarto document.
 
 ```bash
