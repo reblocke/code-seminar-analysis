@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it and the related seminar abstract."
+title: "code-seminar-analysis: Statistical Code for Codes & Rapid Responses (2024 edition)"
+version: "0.1.0"
+license: "MIT"
+repository-code: "https://github.com/reblocke/code-seminar-analysis"
+url: "https://reblocke.github.io/talks/2024-Code-RR"
+authors:
+  - family-names: Locke
+    given-names: Brian W.
+  - family-names: Ryden
+    given-names: Alex
+  - family-names: Patel
+    given-names: Sumit
+  - family-names: Krauspe
+    given-names: Ethan
+  - family-names: Davis
+    given-names: Mark
+  - family-names: Wayne
+    given-names: Rodney
+keywords:
+  - education
+  - rapid response
+  - code blue
+  - internal medicine
+  - residency training
+  - reproducibility
+  - R
+  - Quarto
+preferred-citation:
+  type: article
+  title: "Enhancing Intern Leadership of Inpatient Emergencies"
+  journal: "American Journal of Respiratory and Critical Care Medicine"
+  year: 2025
+  doi: "10.1164/ajrccm.2025.211.Abstracts.A5624"
+  url: "https://www.atsjournals.org/doi/abs/10.1164/ajrccm.2025.211.Abstracts.A5624"
