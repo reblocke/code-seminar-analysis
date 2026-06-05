@@ -77,50 +77,8 @@ code-seminar-analysis/
 ## Disclaimer
 These materials are for education only and **do not constitute medical or clinical guidance**. Always follow your institution’s protocols and ACLS guidance.
 
-## LLM and Repository Readiness Notes
+## Repository Notes
 
-### Description
-Enhancing Intern Leadership of Inpatient Emergencies: Evaluating the Impact of a Seminar Addressing Team Dynamics
+### Project Status
 
-### Instructions
-Start with this README, then inspect the files listed under Repository Layout. For computational workflows, run commands from the repository root and avoid committing generated outputs unless a release explicitly calls for them.
-
-### Authors, Funding, and Acknowledgments
-Maintainer: Brian W. Locke (`@reblocke`, ORCID 0000-0002-3588-5238). Preserve any project-specific author, funding, and acknowledgment details already listed elsewhere in the repository or accompanying publication.
-
-### Repository Layout
-- `.DS_Store`
-- `.RData`
-- `.Rhistory`
-- `ATS Code Poster Final.pptx`
-- `CITATION.cff`
-- `CODE_OF_CONDUCT.md`
-- `CONTRIBUTING.md`
-- `Data/arcbt.xlsx`
-- `Data/forest.xlsx`
-- `LICENSE`
-- `Makefile`
-- `README.md`
-- `SECURITY.md`
-- `Slide Decks 2024/End.pptx`
-
-### Data and Codebook
-Educational evaluation data; verify no trainee identifiers
-
-### Workflow / Script Order
-Review Quarto/R workflow
-
-### Dependencies / Environment
-Repo README and lockfiles
-
-### Citation
-Preferred scholarly citation: https://doi.org/10.1164/ajrccm.2025.211.Abstracts.A5624. Cite this repository with the GitHub URL and the commit or release used.
-
-### License
-Repository license status: MIT. See the root license file when present. Third-party and publisher materials remain under their original terms.
-
-### Manuscript Status
-No manuscript version expected yet; use abstract and repo summary Do not add unpublished manuscript text
-
-### Contact
-Maintainer: Brian W. Locke (`@reblocke`). Use GitHub issues or pull requests for repository-specific questions when the repository is public.
+No manuscript version is expected yet. Use the abstract and repository summary; do not add unpublished manuscript text.

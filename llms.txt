@@ -1,0 +1,45 @@
+# Code Seminar Analysis (2024): Codes & Rapid Responses
+
+Repository: https://github.com/reblocke/code-seminar-analysis
+Purpose: Enhancing Intern Leadership of Inpatient Emergencies: Evaluating the Impact of a Seminar Addressing Team Dynamics
+Status: No manuscript version is expected yet. Use the abstract and repository summary; do not add unpublished manuscript text.
+
+## Human-Readable Entry Points
+- `README.md` is the primary human-facing overview.
+- `llms.txt` is a compact machine-readable index and should not replace the README.
+
+## Repository Layout
+- `.DS_Store`
+- `.RData`
+- `.Rhistory`
+- `ATS Code Poster Final.pptx`
+- `CITATION.cff`
+- `CODE_OF_CONDUCT.md`
+- `CONTRIBUTING.md`
+- `Data/arcbt.xlsx`
+- `Data/forest.xlsx`
+- `LICENSE`
+- `Makefile`
+- `README.md`
+- `SECURITY.md`
+- `Slide Decks 2024/End.pptx`
+
+## Data and Reuse Boundaries
+Educational evaluation data; verify no trainee identifiers
+
+## Workflow
+Review Quarto/R workflow
+
+## Dependencies
+Repo README and lockfiles
+
+## Citation
+Preferred scholarly citation: https://doi.org/10.1164/ajrccm.2025.211.Abstracts.A5624. Cite this repository with the GitHub URL and the commit or release used.
+
+## License
+MIT License for repository code; see `LICENSE`. Third-party and publisher materials remain under their original terms.
+
+## Agent Cautions
+- Do not re-add a README appendix aimed primarily at LLMs; integrate user-facing details into normal README sections.
+- Keep restricted clinical data, private drafts, publisher PDFs, local paths, and generated outputs out of public documentation unless explicitly reviewed.
+- Prefer concise summaries plus links to citable records over copied manuscript or publisher text.
