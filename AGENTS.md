@@ -14,13 +14,7 @@ Enhancing Intern Leadership of Inpatient Emergencies: Evaluating the Impact of a
 - Inspect scripts/notebooks before running them; do not assume generated outputs are current.
 
 ## Workflow
-From the repository root, use this as the initial run guidance:
-
-```bash
-Review Quarto/R workflow
-```
-
-If the command is a placeholder, refine it after reading the local scripts and existing README.
+The analysis source is `code-seminar-analysis.qmd`; the documented command is `quarto render code-seminar-analysis.qmd`. It currently reads a workbook through a legacy machine-specific path and contains a raw survey-response display. Rendering requires approved input/path configuration and private output handling; a prose edit does not require execution. Do not publish a rendered report containing restricted survey rows.
 
 ## Verification Before Publishing Changes
 - Run `git diff --check`.
